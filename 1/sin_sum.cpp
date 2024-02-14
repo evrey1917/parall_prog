@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <vector>
 
 #ifdef USE_DOUBLE
 #define NAME double
@@ -9,11 +10,16 @@
 
 int main()
 {
-    NAME pi = acos(-1), sum_of_sinus = 0, n = 10000000, delta = 1/n, sin_arg = 0;
+    NAME pi = acos(-1), sum_of_sinus = 0, n = 10000000, delta = 1/n, sin_arg = 0, sin_out;
+
+    std::vector<NAME> vector_NAME;
 
     for (int i = 0; i < n; i++)
     {
-        sum_of_sinus = sum_of_sinus + sin(2*pi*sin_arg);
+        sin_out = sin(2*pi*sin_arg);
+        vector_NAME.push_back(sin_out);
+
+        sum_of_sinus = sum_of_sinus + sin_out;
         sin_arg = sin_arg + delta;
     }
 
