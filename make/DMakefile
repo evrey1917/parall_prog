@@ -1,0 +1,2 @@
+all: ../sin_sum.cpp
+	g++ -DUSE_DOUBLE ../sin_sum.cpp -o ../m_sin_sum
