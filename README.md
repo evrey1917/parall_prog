@@ -24,8 +24,9 @@ Name: sin_sum\
 Place: directory with sin_sum.cpp\
 
 <h2>Result</h2>
-double sum of sinus in [0; 2pi]: 6.28364e-07\
-double sum of sinus in [0; 2pi] from array: 6.28364e-07\
-\
-float sum of sinus in [0; 2pi]: 0.267542\
-float sum of sinus in [0; 2pi] from array: 0.267542
+
+    double sum of sinus in [0; 2pi]: 6.28364e-07
+    double sum of sinus in [0; 2pi]: from array: 6.28364e-07
+
+    float sum of sinus in [0; 2pi]: 0.267542
+    float sum of sinus in [0; 2pi] from array: 0.267542
