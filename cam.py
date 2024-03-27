@@ -97,10 +97,11 @@ class WindowImage:
 class OurWindowImage(WindowImage):
     def subShow(self, results):
         frame = results[len(results) - 1]
+        frame_copy = frame.copy()
         for i in range(len(results) - 1):
-            cv2.putText(frame, str(results[i]), (50, (i + 1)*50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+            cv2.putText(frame_copy, str(results[i]), (50, (i + 1)*50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
         
-        self.show(frame)
+        self.show(frame_copy)
 
 if __name__ == "__main__":
     logging.info("Program start")
@@ -127,13 +128,17 @@ if __name__ == "__main__":
         sys.exit()
     resolution = [int(fir), int(sec)]
 
-    freq_index = -1
-    for i in range(len(delays)):
-        if delays[i] == frequency:
-            freq_index = i
-            break
-    if freq_index == -1:
-        logging.error("Bad frequency: " + str(frequency))
+    # freq_index = -1
+    # for i in range(len(delays)):
+    #     if delays[i] == frequency:
+    #         freq_index = i
+    #         break
+    # if freq_index == -1:
+    #     logging.error("Bad frequency: " + str(frequency))
+    #     sys.exit()
+
+    if frequency < min(delays):
+        logging.error("Too small frequency: " + str(frequency))
         sys.exit()
 
     threads = []
@@ -150,7 +155,12 @@ if __name__ == "__main__":
         threads[i].start()
         results.append(0)
     
+    num_prev_frames = 0
     need_new_frame = 0
+    buffer_cam = np.uint8([[[1, 1, 1] for i in range(resolution[1])] for j in range(resolution[0])])
+    cv2.integral(buffer_cam)
+    freqs = [i/min(delays) for i in delays]
+    frequency = frequency/min(delays)
     while not event.is_set():
         try:
             if keyboard.is_pressed('q'):  # if key 'q' is pressed
@@ -162,17 +172,14 @@ if __name__ == "__main__":
         
         for i in range(len(qus)):
             if not qus[i].empty():
-                if len(qus) - 1 == i:           # camera
-                    if need_new_frame:                  # need new frame
-                        need_new_frame = 0
-                        results[i] = qus[i].get()
-                    else:                               # not need new frame
-                        qus[i].get()
-                
-                else:                           # timers
+                if len(qus) - 1 == i:
+                    buffer_cam = qus[i].get()
+
+                else:
                     results[i] = qus[i].get()
-                    if freq_index == i:
-                        need_new_frame = 1
+                    if freqs[i] * results[i] / frequency > num_prev_frames + 1:
+                        results[len(qus) - 1] = buffer_cam
+                        num_prev_frames = num_prev_frames + 1
         windowImage.subShow(results)
         cv2.waitKey(1)
 
